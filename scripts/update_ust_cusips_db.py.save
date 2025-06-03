@@ -191,7 +191,7 @@ if __name__ == "__main__":
     t1 = time.time()
 
     if len(sys.argv) >= 2 and sys.argv[1] == "init":
-        start_date = datetime(2010, 1, 1)
+        start_date = datetime(2018, 1, 1)
         ybday: pd.Timestamp = datetime.today() - BDay(1)
         end_date = ybday.to_pydatetime()
     else:
