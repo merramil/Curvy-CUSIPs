@@ -56,7 +56,7 @@ python update_ust_cusips_db.py
 Init SOFR OIS Curve DB:
 
 ```py
-python update_sofr_ois._db.py init
+python update_sofr_ois_db.py init
 ```
 
 - This will take 30-60 minutes
@@ -66,7 +66,7 @@ python update_sofr_ois._db.py init
 
 Update SOFR OIS Curve DB:
 ```
-python update_sofr_ois._db.py
+python update_sofr_ois_db.py
 ```
 
 Init and update ATM Swaption Vol DB:
