@@ -1,0 +1,50 @@
+[project]
+name = "curvy-cusips"
+version = "0.0.1"
+description = "Using Open Sourced Data for Rates Trading examples in Python"
+readme = "README.md"
+authors = [
+    { name = "Chris Lee", email = "cl114@illinois.edu" }
+]
+requires-python = ">=3.11"
+dependencies =[
+    "aiohttp==3.10.10",
+    "html5lib>=1.1",
+    "httpx==0.27.2",
+    "lxml==5.4.0",
+    "matplotlib==3.9.2",
+    "numpy==2.1.3",
+    "openpyxl>=3.1.5",
+    "pandas==2.2.3",
+    "plotly==5.24.1",
+    "polars==1.12.0",
+    "QuantLib==1.36.0",
+    "rateslib==1.5.0",
+    "Requests==2.32.3",
+    "scikit_learn==1.5.2",
+    "scipy==1.14.1",
+    "seaborn==0.13.2",
+    "statsmodels==0.14.4",
+    "termcolor==2.5.0",
+    "tqdm==4.67.0",
+    "ujson==5.10.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["CurvyCUSIPs"]
+include = [
+    "./scripts/*.py",
+]
+
+[tool.hatch.build.targets.sdist]
+packages = ["CurvyCUSIPs"]
+
+[dependency-groups]
+dev = [
+    "jupyter",
+    "dotenv",
+]
