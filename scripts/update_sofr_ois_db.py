@@ -30,7 +30,7 @@ DB_PATH = "../db/nyclose_sofr_ois"
 if __name__ == "__main__":
 
     if len(sys.argv) >= 2 and sys.argv[1] == "init":
-        data_fetcher = CurveDataFetcher(error_verbose=verbose)
+        data_fetcher = CurveDataFetcher(error_verbose=verbose, global_timeout=120)
         df = pd.read_excel("../db/xlsx/bbg_s490_data_dump.xlsx", sheet_name="data")
         columns = [
             "Date",

@@ -221,7 +221,7 @@ if __name__ == "__main__":
     print(bcolors.OKBLUE + f"Fetching UST Prices for {start_date} and {end_date}" + bcolors.ENDC)
     weeks = get_business_days_groups(start_date, end_date, group_size=60)
 
-    curve_data_fetcher = CurveDataFetcher(use_ust_issue_date=True, error_verbose=True)
+    curve_data_fetcher = CurveDataFetcher(use_ust_issue_date=True, error_verbose=True, global_timeout=120)
     raw_auctions_df = curve_data_fetcher.ust_data_fetcher._historical_auctions_df.copy()
     raw_auctions_df["issue_date"] = pd.to_datetime(raw_auctions_df["issue_date"], errors="coerce")
     raw_auctions_df["maturity_date"] = pd.to_datetime(raw_auctions_df["maturity_date"], errors="coerce")

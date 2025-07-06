@@ -6,7 +6,6 @@ pandas==2.2.3
 plotly==5.24.1
 polars==1.12.0
 QuantLib==1.36
-QuantLib==1.36
 rateslib==1.5.0
 Requests==2.32.3
 scikit_learn==1.5.2
