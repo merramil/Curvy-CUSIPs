@@ -291,6 +291,7 @@ class USTreasuryDataFetcher(DataFetcherBase):
                         response = await client.get(
                             url,
                             headers=build_treasurydirect_header(),
+                            timeout=self._global_timeout,
                         )
                         response.raise_for_status()
                         json_data: JSON = response.json()
@@ -315,6 +316,12 @@ class USTreasuryDataFetcher(DataFetcherBase):
                             return json_data["data"], uid
                         return json_data["data"]
 
+                    except httpx.TimeoutException as e:
+                        self._logger.error(f"UST AUCTIONS - Timeout: {e}")
+                        retries += 1
+                        wait_time = backoff_factor * (2 ** (retries - 1))
+                        self._logger.debug(f"UST AUCTIONS Activity - Timeout. Waiting for {wait_time} seconds before retrying...")
+                        await asyncio.sleep(wait_time)
                     except httpx.HTTPStatusError as e:
                         self._logger.error(f"UST AUCTIONS - Bad Status: {response.status_code}")
 
@@ -326,17 +333,17 @@ class USTreasuryDataFetcher(DataFetcherBase):
 
                         retries += 1
                         wait_time = backoff_factor * (2 ** (retries - 1))
-                        self._logger.debug(f"UST AUCTIONS - Throttled. Waiting for {wait_time} seconds before retrying...")
+                        self._logger.debug(f"UST AUCTIONS - Waiting for {wait_time} seconds before retrying...")
                         await asyncio.sleep(wait_time)
-
-                    except Exception as e:
-                        self._logger.error(f"UST AUCTIONS - Error: {e}")
+                    except ValueError as e:
+                        self._logger.error(f"UST AUCTIONS - Value Error: {e}")
                         retries += 1
                         wait_time = backoff_factor * (2 ** (retries - 1))
-                        self._logger.debug(f"UST STRIPPING Activity - Throttled. Waiting for {wait_time} seconds before retrying...")
+                        self._logger.debug(f"UST AUCTIONS - Value Error. Waiting for {wait_time} seconds before retrying...")
                         await asyncio.sleep(wait_time)
-
-                raise ValueError(f"UST AUCTIONS Activity - Max retries exceeded")
+                    except Exception as e:
+                        self._logger.error(f"UST AUCTIONS - Error: {e}", stack_info=True)
+                        raise RuntimeError(f"UST AUCTIONS - Error: {e}") from e
 
             except Exception as e:
                 self._logger.error(e)
@@ -518,7 +525,7 @@ class USTreasuryDataFetcher(DataFetcherBase):
                     await asyncio.sleep(wait_time)
 
                 except Exception as e:
-                    self._logger.error(f"UST STRIPPING Activity - Error for {date}: {e}")
+                    self._logger.error(f"UST STRIPPING Activity - {date} Error: {e}")
                     retries += 1
                     wait_time = backoff_factor * (2 ** (retries - 1))
                     self._logger.debug(f"UST STRIPPING Activity - Throttled. Waiting for {wait_time} seconds before retrying...")

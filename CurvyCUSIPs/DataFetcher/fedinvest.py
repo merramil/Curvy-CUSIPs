@@ -114,6 +114,12 @@ class FedInvestDataFetcher(DataFetcherBase):
                         return date, df[cols_to_return], uid
                     return date, df[cols_to_return]
 
+                except httpx.TimeoutException as e:
+                    self._logger.error(f"UST Prices - {date} Timeout: {e}")
+                    retries += 1
+                    wait_time = backoff_factor * (2 ** (retries - 1))
+                    self._logger.debug(f"UST Prices - {date} Timeout. Waiting for {wait_time} seconds before retrying...")
+                    await asyncio.sleep(wait_time)
                 except httpx.HTTPStatusError as e:
                     self._logger.error(f"UST Prices - Bad Status for {date}: {response.status_code}")
                     if response.status_code == 404:
@@ -124,15 +130,15 @@ class FedInvestDataFetcher(DataFetcherBase):
                     wait_time = backoff_factor * (2 ** (retries - 1))
                     self._logger.debug(f"UST Prices - Throttled. Waiting for {wait_time} seconds before retrying...")
                     await asyncio.sleep(wait_time)
-
-                except Exception as e:
-                    self._logger.error(f"UST Prices - Error for {date}: {e}")
+                except ValueError as e:
+                    self._logger.error(f"UST Prices - {date} ValueError: {e}")
                     retries += 1
                     wait_time = backoff_factor * (2 ** (retries - 1))
-                    self._logger.debug(f"UST Prices - Throttled. Waiting for {wait_time} seconds before retrying...")
+                    self._logger.debug(f"UST Prices - {date} ValueError. Waiting for {wait_time} seconds before retrying...")
                     await asyncio.sleep(wait_time)
-
-            raise ValueError(f"UST Prices - Max retries exceeded for {date}")
+                except Exception as e:
+                    self._logger.error(f"UST Prices - {date} Error: {e}", exc_info=True)
+                    raise RuntimeError(f"UST Prices - {date} Error: {e}") from e
         except Exception as e:
             self._logger.error(e)
             if uid:
@@ -163,5 +169,3 @@ class FedInvestDataFetcher(DataFetcherBase):
             for date in dates
         ]
         return tasks
-
-  
